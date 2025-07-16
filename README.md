@@ -6,13 +6,13 @@ A collection of reusable GitHub workflows used by Radix.
 
 ## template-prepare-release-pr
 
-A GitHub workflow to automate creation of pull requests for stable- and pre-release versions from [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/). This workflow is intended to be used together with the [template-create-release-from-pr](#template-create-release-from-pr) workflow, which handles creation of a GitHub release and tag from a merged pull request.
+A GitHub workflow to automate creation of pull requests for stable- and pre-release versions from [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/). This workflow is intended to be used together with the [template-create-release-from-pr](#template-create-release-from-pr) workflow, which handles the creation of GitHub release and tag from a merged pull request.
 
 ## Workflow permissions
 
 Ensure that the repository is configured to `Allow GitHub actions to create and approve pull requests`.
 
-The workflow uses [orhun/git-cliff-action](https://github.com/orhun/git-cliff-action) to generate the change log, and [peter-evans/create-pull-request](https://github.com/peter-evans/create-pull-request) to create the pull requests. You must therefore assure that the versions used by this reuasble workflow are allowed in your repository.
+The workflow uses [orhun/git-cliff-action](https://github.com/orhun/git-cliff-action) to generate the change log, and [peter-evans/create-pull-request](https://github.com/peter-evans/create-pull-request) to create the pull requests. You must therefore assure that these actions are allowed in your repository.
 
 You can find these settings under Settings > Actions > General in your repository.
 
@@ -26,9 +26,9 @@ permissions:
 
 ### How it works
 
-As mentioned before, this workflow is intended to be used together with the [template-create-release-from-pr](#template-create-release-from-pr) workflow. Together they handle the lifecycle of a release.
+As mentioned before, this workflow is intended to be used together with the [template-create-release-from-pr](#template-create-release-from-pr) workflow. Together they handle the lifecycle of a release, from pull request to an actual GitHub release and tag.
 
-The workflow adds the label `release: pending` to the pull requests it creates. When you are ready to release you merge the pull request, and trigger the [template-create-release-from-pr](#template-create-release-from-pr) workflow, which takes a pull request number as input, and checks if the `release: pending` label is present and that the state of the pull request is `MERGED`. If both conditions are true, it creates a GitHub release and tag by reading the version defined in `version.txt` in the pull request. Afterwards it replaces the `release: pending` label with `release: tagged`.
+This workflow adds label `release: pending` to the pull requests it creates. When you are ready to release, you merge the pull request and trigger the [template-create-release-from-pr](#template-create-release-from-pr) workflow, which takes a pull request number as input. It checks that the `release: pending` label is present and that the state of the pull request is `MERGED`. If both conditions are true, it creates a GitHub release and tag by reading the version defined in `version.txt` in the pull request. Afterwards it replaces the `release: pending` label with `release: tagged`.
 
 Refer to [template-create-release-from-pr](#template-create-release-from-pr) for an example on how to trigger the release workflow.
 
@@ -40,7 +40,7 @@ The workflow determines the next stable version based on conventional commits si
 
 If `generate-pre-release-pr` is set to `true`, the workflow creates pre-release version pull requests (in addition to stable release PRs). It determines the next pre-release version since the latest version (both stable- and pre-release tags) and writes it to `version.txt`. The workflow does not update `CHANGELOG.md`, but it includes the changes in the pull request body.
 
-### Basic Configuration
+### Configuration
 
 Create a new workflow `.github/workflows/prepare-release-pr.yml` file with the following configuration. The workflow should trigger both when commits are pushed to the default branch (`main` in our example), and when tags are pushed. Triggering on tags is required to correctly recalculate the next version for active pull requests, especially when `generate-pre-release-pr` is enabled.
 
@@ -89,7 +89,7 @@ All inputs, except `branch`, are optional.
 | `pre-release-pull-request-number` | The pre-release pull request number. |
 | `pre-release-pull-request-operation` | The pre-release pull request operation performed by the workflow. |
 
-### Permissions
+
 
 ## template-create-release-from-pr
 
