@@ -6,7 +6,7 @@ on:
         required: true
         type: string
       version-file-path:
-        description: The path to the file where the new version is written to.
+        description: The path to the file where the new version is read from.
         required: false
         type: string
         default: version.txt
@@ -19,26 +19,26 @@ on:
         type: boolean
         default: false
       github-app-id:
-        description: The GitHub App ID to use for authentication when `use-github-app-token` is true.
+        description: The GitHub App ID to use for authentication when `use-github-app-token` is `true`.
         type: string
 
     secrets:
       release-token:
-        description: A Github token with permission to create GitHub release for a specific target commit.
+        description: A Github token with permission to create GitHub release for a specific target commit. Required when `use-github-app-token` is `false` (default).
       github-app-private-key:
-        description: The private key for the GitHub App defined by `github-app-id`. Required when `use-github-app-token` is set to true.
+        description: The private key for the GitHub App defined by `github-app-id`. Required when `use-github-app-token` is `true`.
     outputs:
       commit:
         description: The commit that was released.
         value: ${{ jobs.metadata.outputs.commit }}
       version:
-        description: The commit that was released.
+        description: The version that was released.
         value: ${{ jobs.metadata.outputs.version }}
       tag:
-        description: The commit that was released.
+        description: The tag that was released.
         value: ${{ jobs.metadata.outputs.tag }}
       is-prerelease:
-        description: The commit that was released.
+        description: Release is marked as pre-release.
         value: ${{ jobs.metadata.outputs.is_prerelease }}
       release-result:
         description: The result of the release job. Possible values are success, failure, cancelled, or skipped.
