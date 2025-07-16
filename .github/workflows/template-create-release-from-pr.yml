@@ -1,0 +1,143 @@
+on:
+  workflow_call: 
+    inputs:
+      pull-request-number:
+        description: The pull request number to create release and tag from.
+        required: true
+        type: string
+      version-file-path:
+        description: The path to the file where the new version is written to.
+        required: false
+        type: string
+        default: version.txt
+      use-github-app-token:
+        description: |
+          Use GitHub App to make authenticated request for creating release and tag.
+          When true, requires `github-app-id` and `github-app-private-key` to be set.
+          When set to false, requires a token (PAT) to be set in `gh-release-token`.
+          Defaults to false.
+        type: boolean
+        default: false
+      github-app-id:
+        description: The GitHub App ID to use for authentication when `use-github-app-token` is true.
+        type: string
+
+    secrets:
+      release-token:
+        description: A Github token with permission to create GitHub release for a specific target commit.
+      github-app-private-key:
+        description: The private key for the GitHub App defined by `github-app-id`. Required when `use-github-app-token` is set to true.
+    outputs:
+      commit:
+        description: The commit that was released.
+        value: ${{ jobs.metadata.outputs.commit }}
+      version:
+        description: The commit that was released.
+        value: ${{ jobs.metadata.outputs.version }}
+      tag:
+        description: The commit that was released.
+        value: ${{ jobs.metadata.outputs.tag }}
+      is-prerelease:
+        description: The commit that was released.
+        value: ${{ jobs.metadata.outputs.is_prerelease }}
+      release-result:
+        description: The result of the release job. Possible values are success, failure, cancelled, or skipped.
+        value: ${{ jobs.release.result }}
+        
+jobs:
+  metadata:
+    name: Metadata
+    runs-on: ubuntu-latest
+    permissions: 
+      pull-requests: read
+      contents: read
+    outputs:
+      commit: ${{ steps.metadata.outputs.commit }}
+      version: ${{ steps.metadata.outputs.version }}
+      tag: ${{ steps.metadata.outputs.tag }}
+      is_prerelease: ${{ steps.metadata.outputs.is_prerelease }}
+      releasable: ${{ steps.metadata.outputs.releasable }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: metadata
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+        run: |
+          set -Eeuo pipefail
+
+          pr_number=${{ inputs.pull-request-number }}
+          pr_info=$(gh pr view $pr_number --json title,labels,mergeCommit,state,number | jq 'select(.state=="MERGED" and (.labels[] | .name=="release: pending"))')
+          
+          if [[ -z "$pr_info" ]]; then
+            echo "Pull request $pr_number has invalid release state"
+            echo "releasable=false" >>"$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          commit=$(echo $pr_info | jq -r .mergeCommit.oid)
+          version=$(git show "$commit":"${{ inputs.version-file-path }}")
+
+          # Check that version is valid semver
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid version format for '"$version"'. Use full semver: X.Y.Z, X.Y.Z-alpha, etc."
+            exit 1
+          fi
+
+          tag=v${version}
+          is_prerelease="false"
+          if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+- ]]; then
+              is_prerelease="true"
+          fi
+          
+          echo "releasable=true" >>"$GITHUB_OUTPUT"
+          echo "commit=$commit" >>"$GITHUB_OUTPUT"
+          echo "version=$version" >>"$GITHUB_OUTPUT"
+          echo "tag=$tag" >>"$GITHUB_OUTPUT"
+          echo "is_prerelease=$is_prerelease" >>"$GITHUB_OUTPUT"
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions: 
+      pull-requests: write
+      contents: read
+    needs: metadata
+    if: ${{ needs.metadata.outputs.releasable == 'true' }}
+    steps:
+      - name: Create app token
+        id: app-token
+        if: inputs.use-github-app-token == true
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ inputs.github-app-id }}
+          private-key: ${{ secrets.github-app-private-key }}
+      - name: Select token
+        id: select-token
+        run: |
+          token="${{ secrets.release-token }}"
+          if [[ "${{ inputs.use-github-app-token }}" == "true" ]]; then
+            token=${{ steps.app-token.outputs.token }}
+          fi
+          echo "token=$token" >>"$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Create tag and release
+        env:
+          GH_TOKEN: ${{ steps.select-token.outputs.token }} # Cannot use secrets.GITHUB_TOKEN, ref https://github.blog/changelog/2023-11-02-github-actions-enforcing-workflow-scope-when-creating-a-release/ and issue https://github.com/cli/cli/issues/9514
+        run: |
+          notes=$(gh pr view ${{ inputs.pull-request-number }} --json body | jq -r .body)
+          gh release create ${{ needs.metadata.outputs.tag }} \
+            --notes "$notes" \
+            --target ${{ needs.metadata.outputs.commit }} \
+            --title ${{ needs.metadata.outputs.tag }} \
+            --prerelease=${{ needs.metadata.outputs.is_prerelease }}
+      - name: Mark pull request as tagged
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr edit ${{ inputs.pull-request-number }} \
+            --remove-label "release: pending" \
+            --add-label "release: tagged"
