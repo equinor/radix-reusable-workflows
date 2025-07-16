@@ -1,6 +1,6 @@
-# radix-reusable-workflows
+# Radix Reusable Workflows
 
-A collection of reusable GitHub workflows used by Radix.
+A collection of reusable GitHub workflows used by the Radix team to handle the release workflow of Radix components.
 
 # List of reusable workflows
 
