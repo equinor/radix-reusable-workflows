@@ -8,22 +8,6 @@ A collection of reusable GitHub workflows used by Radix.
 
 A GitHub workflow to automate creation of pull requests for stable- and pre-release versions from [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/). This workflow is intended to be used together with the [template-create-release-from-pr](#template-create-release-from-pr) workflow, which handles the creation of GitHub release and tag from a merged pull request.
 
-## Workflow permissions
-
-Ensure that the repository is configured to `Allow GitHub actions to create and approve pull requests`.
-
-The workflow uses [orhun/git-cliff-action](https://github.com/orhun/git-cliff-action) to generate the change log, and [peter-evans/create-pull-request](https://github.com/peter-evans/create-pull-request) to create the pull requests. You must therefore assure that these actions are allowed in your repository.
-
-You can find these settings under Settings > Actions > General in your repository.
-
-The workflow will need the following permissions in your workflow file:
-```yaml
-permissions:
-  contents: write # Required to create and push changes to the pull request branch
-  pull-requests: write # Required to create pull requests
-  issues: write # Required to create labels in the repository
-```
-
 ### How it works
 
 As mentioned before, this workflow is intended to be used together with the [template-create-release-from-pr](#template-create-release-from-pr) workflow. Together they handle the lifecycle of a release, from pull request to an actual GitHub release and tag.
@@ -39,6 +23,22 @@ The workflow determines the next stable version based on conventional commits si
 #### Pre-release pull requests
 
 If `generate-pre-release-pr` is set to `true`, the workflow creates pre-release version pull requests (in addition to stable release PRs). It determines the next pre-release version since the latest version (both stable- and pre-release tags) and writes it to `version.txt`. The workflow does not update `CHANGELOG.md`, but it includes the changes in the pull request body.
+
+### Workflow permissions
+
+Ensure that the repository is configured to `Allow GitHub actions to create and approve pull requests`.
+
+The workflow uses [orhun/git-cliff-action](https://github.com/orhun/git-cliff-action) to generate the change log, and [peter-evans/create-pull-request](https://github.com/peter-evans/create-pull-request) to create the pull requests. You must therefore assure that these actions are allowed in your repository.
+
+You can find these settings under Settings > Actions > General in your repository.
+
+The workflow will need the following permissions in your workflow file:
+```yaml
+permissions:
+  contents: write # Required to create and push changes to the pull request branch
+  pull-requests: write # Required to create pull requests
+  issues: write # Required to create labels in the repository
+```
 
 ### Configuration
 
@@ -90,7 +90,114 @@ All inputs, except `branch`, are optional.
 | `pre-release-pull-request-operation` | The pre-release pull request operation performed by the workflow. |
 
 
-
 ## template-create-release-from-pr
 
+A GitHub workflow that creates release and tag from a merged pull request with label `release: pending`. These pull requests should be created from the [template-prepare-release-pr](#template-prepare-release-pr) workflow to ensure that the GitHub release contains a proper change log and version.
+
+### How it works
+
+The workflow reads the pull request given in the `pull-request-number` input, and checks that the state is `MERGED` and that label `release: pending` exists. If these conditions are not met, the workflow exits with code 0 and sets the `release-result` output to `skipped`.
+
+If the above conditions are met, the workflow tries to read the `version.txt` file from the pull request merge commit, and verify that the value is a valid sermver version. The workflow exists with a non-zero exit code if reading the file or verifying the version fails.
+
+When all conditions are met, the workflow creates a GitHub release and tag (prefixing the version from `version.txt` with `v`) for the pull request commit. The pull request body is used as notes for the release. If the version is a pre-release then the GitHub release is also marked as a pre-release.
+
+After the release is successfully created, the workflow removes the `release: pending` label and adds a `release: tagged` label.
+
+### Workflow permissions
+
+In order to create a release for specific commit, [GitHub requires a token with `workflow:write` permissions](https://github.blog/changelog/2023-11-02-github-actions-enforcing-workflow-scope-when-creating-a-release/). These permissions cannot be granted to the workflow's `secrets.GITHUB_TOKEN` or `github.token`. Instead you must use a PAT token or GitHub App token with `workflow:write` and `content:write` permissions. You can specify a token directly in the `release-token` secret, or you can have the workflow create an GitHub App token by setting `use-github-app-token` to `true` and specifying the GitHub App ID in `github-app-id` and corresponding private key in `github-app-private-key`.
+
+Read [Installing your own GitHub App](https://docs.github.com/en/apps/using-github-apps/installing-your-own-github-app#installing-your-private-github-app-on-your-repository) for instruction on how to create and install a GitHub App.
+
+The workflow will need the following permissions in your workflow file:
+```yaml
+permissions:
+  pull-requests: write # Read pull request and write labels
+  contents: read # Read the `version.txt` file from the repository
+```
+
+### Configuration
+
+Example using PAT token stored in repository secret `RELEASE_TOKEN`:
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: The pull request to release
+        type: string
+        required: true
+  
+jobs:
+  release-pull-request:
+    name: Release pull request
+    permissions:
+      pull-requests: write
+      contents: read
+    uses: nilsgstrabo/learnrelease/.github/workflows/template-create-release-from-pr.yml@main
+    with:
+      pull-request-number: ${{ inputs.pr-number }}
+    secrets:
+      github-app-private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+```
+
+Example using GitHub App ID, stored in repository variable `GH_APP_ID`, and corresponding private key, stored in repository secret `GH_APP_PRIVATE_KEY`:
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: The pull request to release
+        type: string
+        required: true
+  
+jobs:
+  release-pull-request:
+    name: Release pull request
+    permissions:
+      pull-requests: write
+      contents: read
+    uses: nilsgstrabo/learnrelease/.github/workflows/template-create-release-from-pr.yml@main
+    with:
+      pull-request-number: ${{ inputs.pr-number }}
+      github-app-id: ${{ vars.GH_APP_ID }}
+      use-github-app-token: true
+    secrets:
+      release-token: ${{ secrets.RELEASE_TOKEN }}
+```
+
+### Inputs
+
+Input `pull-request-number` is required. If `use-github-app-token` is `false` (default) then `release-token` must be provided, and if `use-github-app-token` is `true` then `github-app-id` and `github-app-private-key` must be provided.
+
+| Name | Description | Default |
+| ---- | --- | --- |
+| `pull-request-number` | The pull request number to create release and tag from. |  |
+| `version-file-path` | The path to the file where the new version is read from. | `version.txt` |
+| `use-github-app-token` | Use GitHub App to make authenticated request for creating release and tag. When true, requires `github-app-id` and `github-app-private-key` to be set. When set to false, requires a token (PAT) to be set in `gh-release-token`. | `false` |
+| `github-app-id` | The GitHub App ID to use for authentication when `use-github-app-token` is `true`. |  |
+| `release-token` | A Github token with permission to create GitHub release for a specific target commit. Required when `use-github-app-token` is `false`. |  |
+| `github-app-private-key` | The private key for the GitHub App defined by `github-app-id`. Required when `use-github-app-token` is `true`. |  |
+
+### Outputs
+
+| Name | Description |
+| ---- | --- |
+| `release-result` | The result of the release job. Possible values are success, failure, cancelled, or skipped. |
+| `version` | The version that was released. |
+| `tag` | The tag that was released. |
+| `commit` | The commit that was released. |
+| `is-prerelease` | Release is marked as pre-release. |
+
 ## template-unreleased-prs-metadata
+
+### How it works
+
+### Workflow permissions
+
+### Configuration
+
+### Inputs
+
+### Outputs
