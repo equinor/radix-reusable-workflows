@@ -139,7 +139,7 @@ jobs:
     with:
       pull-request-number: ${{ inputs.pr-number }}
     secrets:
-      github-app-private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+      release-token: ${{ secrets.RELEASE_TOKEN }}
 ```
 
 Example using GitHub App ID, stored in repository variable `GH_APP_ID`, and corresponding private key, stored in repository secret `GH_APP_PRIVATE_KEY`:
@@ -164,7 +164,7 @@ jobs:
       github-app-id: ${{ vars.GH_APP_ID }}
       use-github-app-token: true
     secrets:
-      release-token: ${{ secrets.RELEASE_TOKEN }}
+      github-app-private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}      
 ```
 
 ### Inputs
