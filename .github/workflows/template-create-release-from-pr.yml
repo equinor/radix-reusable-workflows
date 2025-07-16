@@ -21,7 +21,17 @@ on:
       github-app-id:
         description: The GitHub App ID to use for authentication when `use-github-app-token` is `true`.
         type: string
-
+      github-app-owner:
+        description: |
+          The GitHub App owner to use for authentication when `use-github-app-token` is `true`. 
+          Defaults to the owner of the current repo if not set.
+        type: string
+      github-app-repositories:
+        description: |
+          Comma or newline-separated list of repositories to grant access to for GitHub App when `use-github-app-token` is `true`.
+          If `github-app-owner` is set and `github-app-repositories` is empty, access will be scoped to all repositories the GitHub App is installed in.
+          If `github-app-owner` and `github-app-repositories` are empty, access will be scoped to only the current repository.
+        type: string
     secrets:
       release-token:
         description: A Github token with permission to create GitHub release for a specific target commit. Required when `use-github-app-token` is `false` (default).
@@ -112,6 +122,10 @@ jobs:
         with:
           app-id: ${{ inputs.github-app-id }}
           private-key: ${{ secrets.github-app-private-key }}
+          owner: ${{inputs.github-app-owner }}
+          repositories: ${{ inputs.github-app-repositories }}
+          permission-workflows: write
+          permission-contents: write
       - name: Select token
         id: select-token
         run: |

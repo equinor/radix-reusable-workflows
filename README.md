@@ -177,6 +177,8 @@ Input `pull-request-number` is required. If `use-github-app-token` is `false` (d
 | `version-file-path` | The path to the file where the new version is read from. | `version.txt` |
 | `use-github-app-token` | Use GitHub App to make authenticated request for creating release and tag. When true, requires `github-app-id` and `github-app-private-key` to be set. When set to false, requires a token (PAT) to be set in `gh-release-token`. | `false` |
 | `github-app-id` | The GitHub App ID to use for authentication when `use-github-app-token` is `true`. |  |
+| `github-app-owner` | The GitHub App owner to use for authentication when `use-github-app-token` is `true`. Defaults to the owner of the current repo if not set. |  |
+| `github-app-repositories` | Comma or newline-separated list of repositories to grant access to for GitHub App when `use-github-app-token` is `true`. If `github-app-owner` is set and `github-app-repositories` is empty, access will be scoped to all repositories the GitHub App is installed in. If `github-app-owner` and `github-app-repositories` are empty, access will be scoped to only the current repository. |  |
 | `release-token` | A Github token with permission to create GitHub release for a specific target commit. Required when `use-github-app-token` is `false`. |  |
 | `github-app-private-key` | The private key for the GitHub App defined by `github-app-id`. Required when `use-github-app-token` is `true`. |  |
 
