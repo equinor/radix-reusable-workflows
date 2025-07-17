@@ -112,6 +112,7 @@ jobs:
     permissions: 
       pull-requests: write
       contents: read
+      issues: write
     needs: metadata
     if: ${{ needs.metadata.outputs.releasable == 'true' }}
     steps:
@@ -152,6 +153,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          if [[ -z "$(gh label list --json name -q '.[] | select(.name=="release: tagged")')" ]]; then
+            gh label create "release: tagged"
+          fi
           gh pr edit ${{ inputs.pull-request-number }} \
             --remove-label "release: pending" \
             --add-label "release: tagged"
