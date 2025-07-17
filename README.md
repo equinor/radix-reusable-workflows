@@ -195,14 +195,62 @@ Input `pull-request-number` is required. If `use-github-app-token` is `false` (d
 | `commit` | The commit that was released. |
 | `is-prerelease` | Release is marked as pre-release. |
 
-## template-unreleased-prs-metadata
+## template-unreleased-pr-metadata
+
+A GitHub workflow that outputs a list of pull request that are merged but not yet released by the [template-create-release-from-pr](#template-create-release-from-pr) workflow.
+
+This workflow can be used to generate input (as a matrix strategy) to the [template-create-release-from-pr](#template-create-release-from-pr).
 
 ### How it works
 
+The workflow queries all pull requests that are merged and has a `release: pending` label, and returns the pull request numbers as a JSON array to the `unreleased-pull-requests` output. It also outputs the count of pull requests to `unreleased-pull-request-count`.
+
 ### Workflow permissions
+
+The workflow will need the following permissions in your workflow file:
+```yaml
+permissions: 
+  pull-requests: read # Read pull requests
+```
 
 ### Configuration
 
+This example shows how this workflow can provide unreleased pull requests as a matrix to the [template-create-release-from-pr](#template-create-release-from-pr) workflow. It is configured to run on push to the `main` branch, which allows for auotmatic releaseing when a pull request is merged. If you want to manage releases manually, you can replace the `on.push` trigger with `workflow_dispatch`.
+
+```yaml
+on:
+  push:
+    branches:
+      - main
+  
+jobs:
+  unreleased-prs-metadata:
+    name: Get list of pending release pull requests
+    permissions:
+      pull-requests: read
+    uses: equinor/radix-reusable-workflows/.github/workflows/template-unreleased-pr-metadata.yml@main
+  release-pull-request:
+    name: Release pull request
+    needs: 
+      - unreleased-prs-metadata
+    if: needs.unreleased-prs-metadata.outputs.unreleased-pull-request-count > 0
+    strategy:
+      matrix:
+        pull-request-number: ${{ fromJson(needs.unreleased-prs-metadata.outputs.unreleased-pull-requests) }}
+    permissions:
+      pull-requests: write
+      contents: read
+      issues: write
+    uses: equinor/radix-reusable-workflows/.github/workflows/template-create-release-from-pr.yml@main
+```
+
 ### Inputs
 
+This workflow has no inputs.
+
 ### Outputs
+
+| Name | Description |
+| ---- | --- |
+| `unreleased-pull-requests` | A JSON array containing numbers (ID) of pull requests that are merged and labelled with "release: pending", e.g. [55, 57] |
+| `unreleased-pull-request-count` | Number of items in unreleased-pull-requests JSON array |
