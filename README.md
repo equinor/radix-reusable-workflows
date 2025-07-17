@@ -37,7 +37,7 @@ The workflow will need the following permissions in your workflow file:
 permissions:
   contents: write # Required to create and push changes to the pull request branch
   pull-requests: write # Required to create pull requests
-  issues: write # Required to create labels in the repository
+  issues: write # Required to create "release: pending" label in the repository
 ```
 
 ### Configuration
@@ -55,7 +55,7 @@ on:
 
 jobs:
   prepare-release-pr:
-    uses: nilsgstrabo/learnrelease/.github/workflows/template-prepare-release-pr.yml@main # You should pin this to a specific commit for security reasons
+    uses: equinor/radix-reusable-workflows/.github/workflows/template-prepare-release-pr.yml@main # You should pin this to a specific commit for security reasons
     permissions:
       contents: write
       pull-requests: write
@@ -113,8 +113,9 @@ Read [Installing your own GitHub App](https://docs.github.com/en/apps/using-gith
 The workflow will need the following permissions in your workflow file:
 ```yaml
 permissions:
-  pull-requests: write # Read pull request and write labels
   contents: read # Read the `version.txt` file from the repository
+  pull-requests: write # Read pull request and write labels
+  issues: write # Required to create "release: tagged" label in the repository
 ```
 
 ### Configuration
@@ -133,9 +134,10 @@ jobs:
   release-pull-request:
     name: Release pull request
     permissions:
-      pull-requests: write
       contents: read
-    uses: nilsgstrabo/learnrelease/.github/workflows/template-create-release-from-pr.yml@main
+      pull-requests: write
+      issues: write
+    uses: equinor/radix-reusable-workflows/.github/workflows/template-create-release-from-pr.yml@main
     with:
       pull-request-number: ${{ inputs.pr-number }}
     secrets:
@@ -156,9 +158,10 @@ jobs:
   release-pull-request:
     name: Release pull request
     permissions:
-      pull-requests: write
       contents: read
-    uses: nilsgstrabo/learnrelease/.github/workflows/template-create-release-from-pr.yml@main
+      pull-requests: write
+      issues: write
+    uses: equinor/radix-reusable-workflows/.github/workflows/template-create-release-from-pr.yml@main
     with:
       pull-request-number: ${{ inputs.pr-number }}
       github-app-id: ${{ vars.GH_APP_ID }}
