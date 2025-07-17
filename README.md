@@ -242,6 +242,9 @@ jobs:
       contents: read
       issues: write
     uses: equinor/radix-reusable-workflows/.github/workflows/template-create-release-from-pr.yml@main
+    with:
+      pull-request-number: ${{ matrix.pull-request-number }}
+      # Add token configuration
 ```
 
 ### Inputs
