@@ -1,0 +1,32 @@
+on:
+  workflow_call:
+    outputs:
+      unreleased-pull-requests:
+        description: "A JSON array containing numbers (ID) of pull requests that are merged and labelled with \"release: pending\", e.g. [55, 57]"
+        value: ${{ jobs.releases-metadata.outputs.unreleased_pull_requests }}
+      unreleased-pull-request-count:
+        description: Number of items in unreleased-pull-requests JSON array
+        value: ${{ jobs.releases-metadata.outputs.unreleased_pull_request_count }}
+jobs:
+  releases-metadata:
+    name: Metadata
+    runs-on: ubuntu-latest
+    permissions: 
+      pull-requests: read
+    outputs:
+      unreleased_pull_requests: ${{ steps.metadata.outputs.unreleased_pull_requests }}
+      unreleased_pull_request_count: ${{ steps.metadata.outputs.unreleased_pull_request_count }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Metadata
+        id: metadata
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          unreleased_pull_requests=$(gh pr list --json number --state merged --label "release: pending" | jq '[.[] | .number]')
+          unreleased_pull_request_count=$(echo $unreleased_pull_requests | jq '. | length')
+
+          echo "unreleased_pull_requests="$unreleased_pull_requests"" >>"$GITHUB_OUTPUT"
+          echo "unreleased_pull_request_count=$unreleased_pull_request_count" >>"$GITHUB_OUTPUT"
