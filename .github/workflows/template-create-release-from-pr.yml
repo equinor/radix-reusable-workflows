@@ -14,7 +14,7 @@ on:
         description: |
           Use GitHub App to make authenticated request for creating release and tag.
           When true, requires `github-app-id` and `github-app-private-key` to be set.
-          When set to false, requires a token (PAT) to be set in `gh-release-token`.
+          When set to false, requires a token (PAT) to be set in `release-token`.
           Defaults to false.
         type: boolean
         default: false
