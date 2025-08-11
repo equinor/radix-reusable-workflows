@@ -17,3 +17,4 @@ jobs:
       issues: write
     with:
       branch: main
+      cliff-config-path: cliff.toml
