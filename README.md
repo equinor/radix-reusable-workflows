@@ -220,6 +220,7 @@ The workflow will need the following permissions in your workflow file:
 ```yaml
 permissions: 
   pull-requests: read # Read pull requests
+  contents: read # Read content of repo
 ```
 
 ### Configuration
@@ -237,6 +238,7 @@ jobs:
     name: Get list of pending release pull requests
     permissions:
       pull-requests: read
+      contents: read
     uses: equinor/radix-reusable-workflows/.github/workflows/template-unreleased-pr-metadata.yml@main
   release-pull-request:
     name: Release pull request

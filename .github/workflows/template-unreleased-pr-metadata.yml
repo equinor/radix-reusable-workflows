@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions: 
       pull-requests: read
+      contents: read
     outputs:
       unreleased_pull_requests: ${{ steps.metadata.outputs.unreleased_pull_requests }}
       unreleased_pull_request_count: ${{ steps.metadata.outputs.unreleased_pull_request_count }}
