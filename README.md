@@ -32,9 +32,14 @@ If `generate-pre-release-pr` is set to `true`, the workflow creates pre-release 
 
 Ensure that the repository is configured to `Allow GitHub actions to create and approve pull requests`.
 
-The workflow uses [orhun/git-cliff-action](https://github.com/orhun/git-cliff-action) to generate the change log, and [peter-evans/create-pull-request](https://github.com/peter-evans/create-pull-request) to create the pull requests. You must therefore assure that these actions are allowed in your repository.
+The workflow uses [orhun/git-cliff-action](https://github.com/orhun/git-cliff-action) to generate the change log, and [peter-evans/create-pull-request](https://github.com/peter-evans/create-pull-request) to create the pull requests. These actions are referenced by SHA. You must therefore assure that these actions are allowed in your repository.
 
-You can find these settings under Settings > Actions > General in your repository.
+You can find these settings under Settings > Actions > General in your repository. Include the following to the list:
+
+```
+orhun/git-cliff-action@4a4a951bc43fafe41cd2348d181853f52356bee7,
+peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e
+```
 
 The workflow will need the following permissions in your workflow file:
 ```yaml
