@@ -4,6 +4,10 @@ A collection of reusable GitHub workflows used by the Radix team to handle the r
 
 # List of reusable workflows
 
+- [template-prepare-release-pr](#template-prepare-release-pr)
+- [template-create-release-from-pr](#template-create-release-from-pr)
+- [template-unreleased-pr-metadata](#template-unreleased-pr-metadata)
+
 ## template-prepare-release-pr
 
 A GitHub workflow to automate creation of pull requests for stable- and pre-release versions from [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/). This workflow is intended to be used together with the [template-create-release-from-pr](#template-create-release-from-pr) workflow, which handles the creation of GitHub release and tag from a merged pull request.
