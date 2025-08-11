@@ -1,0 +1,19 @@
+name: Prepare release pull request
+on:
+  push: 
+    tags:
+      - '**'
+    branches: 
+      - main
+  workflow_dispatch:
+
+jobs:
+  prepare-release-pr:
+    name: Prepare release pull request
+    uses: equinor/radix-reusable-workflows/.github/workflows/template-prepare-release-pr.yml@main
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    with:
+      branch: main
