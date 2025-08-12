@@ -29,6 +29,8 @@ All notable changes to this project will be documented in this file.
 
 - Remove extra set option in bash script - ([832a4db](https://github.com/equinor/radix-reusable-workflows/commit/832a4db5113028bc30051507df6cb78e054ec343))
 
+- Use release notes from file - ([02b2da1](https://github.com/equinor/radix-reusable-workflows/commit/02b2da1aedbd8c0d215ae720d5e61b63bfc8d5b6))
+
 
 ### 📚 Documentation
 
