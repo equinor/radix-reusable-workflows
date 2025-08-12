@@ -27,6 +27,8 @@ All notable changes to this project will be documented in this file.
 
 - Extract pull request body in metadata job - ([d2e5e9e](https://github.com/equinor/radix-reusable-workflows/commit/d2e5e9e2b8f2e4ecc253a2c951a41d4c5b93423e))
 
+- Remove extra set option in bash script - ([832a4db](https://github.com/equinor/radix-reusable-workflows/commit/832a4db5113028bc30051507df6cb78e054ec343))
+
 
 ### 📚 Documentation
 
