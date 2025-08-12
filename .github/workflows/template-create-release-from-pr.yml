@@ -67,7 +67,6 @@ jobs:
       tag: ${{ steps.metadata.outputs.tag }}
       is_prerelease: ${{ steps.metadata.outputs.is_prerelease }}
       releasable: ${{ steps.metadata.outputs.releasable }}
-      pr_body: ${{ steps.metadata.outputs.pr_body }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -77,18 +76,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
         run: |
           set -Eeuo pipefail
-
-          set_output() {
-            local name="$1"
-            local value="$2"
-            local delimiter
-            delimiter="$(uuidgen)"
-            {
-              echo "${name}<<${delimiter}"
-              echo "${value}"
-              echo "${delimiter}"
-            } >> "$GITHUB_OUTPUT"
-          }
 
           pr_number=${{ inputs.pull-request-number }}
           pr_info=$(gh pr view $pr_number --json title,labels,mergeCommit,state,number,body | jq 'select(.state=="MERGED" and (.labels[] | .name=="release: pending"))')
@@ -100,7 +87,6 @@ jobs:
           fi
 
           commit=$(echo $pr_info | jq -r .mergeCommit.oid)
-          pr_body=$(echo $pr_info | jq -r .body)
           version=$(git show "$commit":"${{ inputs.version-file-path }}")
 
           # Check that version is valid semver
@@ -115,12 +101,11 @@ jobs:
               is_prerelease="true"
           fi
           
-          set_output "releasable" true
-          set_output "commit" $commit
-          set_output "version" $version
-          set_output "tag" $tag
-          set_output "is_prerelease" $is_prerelease
-          set_output "pr_body" "$pr_body"
+          echo "releasable=true" >>"$GITHUB_OUTPUT"
+          echo "commit=$commit" >>"$GITHUB_OUTPUT"
+          echo "version=$version" >>"$GITHUB_OUTPUT"
+          echo "tag=$tag" >>"$GITHUB_OUTPUT"
+          echo "is_prerelease=$is_prerelease" >>"$GITHUB_OUTPUT"
   release:
     name: Release
     runs-on: ubuntu-latest
@@ -158,6 +143,17 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Create release notes file
+        id: release-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -Eeuo pipefail
+
+          file=${{ runner.temp }}/releasenotes
+          gh pr view ${{ inputs.pull-request-number }} --json body | jq -r .body > "$file"
+
+          echo "release_notes_file=$file" >>"$GITHUB_OUTPUT"          
       - name: Create tag and release
         env:
           GH_TOKEN: ${{ steps.select-token.outputs.token }} # Cannot use secrets.GITHUB_TOKEN, ref https://github.blog/changelog/2023-11-02-github-actions-enforcing-workflow-scope-when-creating-a-release/ and issue https://github.com/cli/cli/issues/9514
@@ -165,7 +161,7 @@ jobs:
           set -Eeuo pipefail
 
           gh release create ${{ needs.metadata.outputs.tag }} \
-            --notes "${{ needs.metadata.outputs.pr_body }}" \
+            --notes-file ${{ steps.release-notes.outputs.release_notes_file }} \
             --target ${{ needs.metadata.outputs.commit }} \
             --title ${{ needs.metadata.outputs.tag }} \
             --prerelease=${{ needs.metadata.outputs.is_prerelease }}
