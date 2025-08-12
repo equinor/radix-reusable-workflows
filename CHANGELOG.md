@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] - 2025-08-11
+## [1.0.0] - 2025-08-12
 
 ### 🚀 Features
 
@@ -24,6 +24,8 @@ All notable changes to this project will be documented in this file.
 - Pin official actions from GitHub to major version - ([202a780](https://github.com/equinor/radix-reusable-workflows/commit/202a780486066317323d11e5697aa575469311e3))
 
 - Add content: read permissions for template-unreleased-pr-metadata - ([23981a5](https://github.com/equinor/radix-reusable-workflows/commit/23981a5d046ddfd032702562bf8a490d1b40376c))
+
+- Extract pull request body in metadata job - ([d2e5e9e](https://github.com/equinor/radix-reusable-workflows/commit/d2e5e9e2b8f2e4ecc253a2c951a41d4c5b93423e))
 
 
 ### 📚 Documentation
