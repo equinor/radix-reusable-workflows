@@ -31,6 +31,10 @@ All notable changes to this project will be documented in this file.
 
 - Use release notes from file - ([02b2da1](https://github.com/equinor/radix-reusable-workflows/commit/02b2da1aedbd8c0d215ae720d5e61b63bfc8d5b6))
 
+- Add missing file patch-semver.sh - ([60ba3ba](https://github.com/equinor/radix-reusable-workflows/commit/60ba3ba4e8dff2b49b5a279a0b69401ad08d94c3))
+
+- Add set options to inline shell scripts - ([f911cde](https://github.com/equinor/radix-reusable-workflows/commit/f911cdee97c191bb805a08257e281d1ea3efb9f4))
+
 
 ### 📚 Documentation
 
