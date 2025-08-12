@@ -76,7 +76,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
         run: |
-          set -Eeuo pipefailset -Eeuo pipefail
+          set -Eeuo pipefail
 
           set_output() {
             local name="$1"
@@ -178,7 +178,7 @@ jobs:
           if [[ -z "$(gh label list --json name -q '.[] | select(.name=="release: tagged")')" ]]; then
             gh label create "release: tagged"
           fi
-          
+
           gh pr edit ${{ inputs.pull-request-number }} \
             --remove-label "release: pending" \
             --add-label "release: tagged"
