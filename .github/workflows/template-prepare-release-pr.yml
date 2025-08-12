@@ -86,11 +86,15 @@ jobs:
               cache: false
         - name: Install git-semver
           run: |
+            set -Eeuo pipefail
+
             go install github.com/psanetra/git-semver/cli@v1.1.2
             mv $(which cli) $(dirname $(which cli))/git-semver
         - name: Build release and prerelease tag
           id: ver
           run: |
+            set -Eeuo pipefail  
+
             next_prerelease_version=$(git-semver next --pre-release-tag ${{ inputs.pre-release-version-prefix }} --pre-release-counter)
             next_stable_version=$(git-semver next)
             latest_version=$(git-semver latest --include-pre-releases)
@@ -120,6 +124,8 @@ jobs:
             echo "commits_since_latest_version=$commits_since_latest_version" >>"$GITHUB_OUTPUT"
         - name: Print computed version
           run: |
+            set -Eeuo pipefail
+
             echo "next_prerelease_version = ${{ steps.ver.outputs.next_prerelease_version }}"
             echo "next_stable_version = ${{ steps.ver.outputs.next_stable_version }}"
             echo "next_stable_version_greater_than_latest = ${{ steps.ver.outputs.next_stable_version_greater_than_latest }}"
@@ -171,14 +177,13 @@ jobs:
         - name: Update version tracking file
           if: needs.metadata.outputs.next_stable_version_greater_than_latest == 'true'
           run: |
+            set -Eeuo pipefail
+
             echo -n "${{ needs.metadata.outputs.next_stable_version }}" > ${{ inputs.version-file-path }}
         - name: Update extra files
           if: inputs.extra-files != '' && needs.metadata.outputs.next_stable_version_greater_than_latest == 'true'
           run: |
             ./scripts/patch-semver.sh "${{ needs.metadata.outputs.next_stable_version }}" "${{ inputs.extra-files }}"
-        - name: Test git
-          run: |
-            
         - name: Create stable release PR
           id: pull-request
           uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
@@ -227,6 +232,8 @@ jobs:
         - name: Update version tracking file
           if: inputs.generate-pre-release-pr == true && needs.metadata.outputs.next_prerelease_version_greater_than_latest == 'true' && needs.metadata.outputs.commits_since_latest_version > 0
           run: |
+            set -Eeuo pipefail
+            
             echo -n "${{ needs.metadata.outputs.next_prerelease_version }}" > ${{ inputs.version-file-path }}
         - name: Update extra files
           if: inputs.generate-pre-release-pr == true && inputs.extra-files != '' && needs.metadata.outputs.next_stable_version_greater_than_latest == 'true' && needs.metadata.outputs.commits_since_latest_version > 0

@@ -26,6 +26,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -Eeuo pipefail
+          
           unreleased_pull_requests=$(gh pr list --json number --state merged --label "release: pending" | jq '[.[] | .number]')
           unreleased_pull_request_count=$(echo $unreleased_pull_requests | jq '. | length')
 
