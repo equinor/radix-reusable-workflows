@@ -193,7 +193,7 @@ jobs:
             title: "chore: release ${{ needs.metadata.outputs.next_stable_version }}"
             branch: ${{ inputs.stable-release-pr-branch }}
             labels: "release: pending"
-            body: ${{ steps.stable-changelog.outputs.content }}
+            body-path: ${{ steps.stable-changelog.outputs.changelog }}
             commit-message: "chore(release): prepare for stable release ${{ needs.metadata.outputs.next_stable_version }}"
             sign-commits: true
             add-paths: |
@@ -233,7 +233,7 @@ jobs:
           if: inputs.generate-pre-release-pr == true && needs.metadata.outputs.next_prerelease_version_greater_than_latest == 'true' && needs.metadata.outputs.commits_since_latest_version > 0
           run: |
             set -Eeuo pipefail
-            
+
             echo -n "${{ needs.metadata.outputs.next_prerelease_version }}" > ${{ inputs.version-file-path }}
         - name: Update extra files
           if: inputs.generate-pre-release-pr == true && inputs.extra-files != '' && needs.metadata.outputs.next_stable_version_greater_than_latest == 'true' && needs.metadata.outputs.commits_since_latest_version > 0
@@ -248,7 +248,7 @@ jobs:
             title: "chore: prerelease ${{ needs.metadata.outputs.next_prerelease_version }}"
             branch: ${{ inputs.pre-release-pr-branch }}
             labels: "release: pending"
-            body: ${{ steps.unreleased-changelog.outputs.content }}
+            body-path: ${{ steps.unreleased-changelog.outputs.changelog }}
             commit-message: "chore(release): prepare for prerelease ${{ needs.metadata.outputs.next_prerelease_version }}"
             sign-commits: true
             add-paths: |
