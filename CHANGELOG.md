@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1](https://github.com/equinor/radix-reusable-workflows/compare/v1.0.0..v1.0.1) - 2025-08-13
+
+### 🐛 Bug Fixes
+
+- Replace parameter body with body-path in create-pull-request steps - ([9019aee](https://github.com/equinor/radix-reusable-workflows/commit/9019aeec6d75836706d4434e239d2e585e2ccaed))
+
+
 ## [1.0.0] - 2025-08-12
 
 ### 🚀 Features
