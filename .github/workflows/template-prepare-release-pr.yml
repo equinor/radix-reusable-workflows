@@ -39,7 +39,7 @@ on:
         type: string
         required: false
       extra-files:
-        description: A space or newline separated list of files to update with new version number. For each file, the workflow will look for lines containing the text '# x-patch-semver', and replace anything that matches a semver version with the new version.
+        description: A newline separated list of files to update with new version number. For each file, the workflow will look for lines containing the text '# x-patch-semver', and replace anything that matches a semver version with the new version.
         type: string
         required: false
     outputs:
@@ -183,7 +183,21 @@ jobs:
         - name: Update extra files
           if: inputs.extra-files != '' && needs.metadata.outputs.next_stable_version_greater_than_latest == 'true'
           run: |
-            ./scripts/patch-semver.sh "${{ needs.metadata.outputs.next_stable_version }}" "${{ inputs.extra-files }}"
+            set -Eeuo pipefail
+
+            new_version="${{ needs.metadata.outputs.next_stable_version }}"
+            files="${{ inputs.extra-files }}"
+
+            if [[ ! "$new_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+              echo "Invalid version format. Use full semver: X.Y.Z, X.Y.Z-alpha, etc."
+              exit 1
+            fi
+
+            for file in $files; do # loop over the rest of the arguments and replace content directly in the file
+              sed -Ei "/# x-patch-semver/ {
+                s/[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?/$new_version/
+              }" "$file"
+            done
         - name: Create stable release PR
           id: pull-request
           uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
@@ -238,7 +252,21 @@ jobs:
         - name: Update extra files
           if: inputs.generate-pre-release-pr == true && inputs.extra-files != '' && needs.metadata.outputs.next_stable_version_greater_than_latest == 'true' && needs.metadata.outputs.commits_since_latest_version > 0
           run: |
-            ./scripts/patch-semver.sh "${{ needs.metadata.outputs.next_prerelease_version }}" "${{ inputs.extra-files }}"            
+            set -Eeuo pipefail
+
+            new_version="${{ needs.metadata.outputs.next_prerelease_version }}"
+            files="${{ inputs.extra-files }}"
+
+            if [[ ! "$new_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+              echo "Invalid version format. Use full semver: X.Y.Z, X.Y.Z-alpha, etc."
+              exit 1
+            fi
+
+            for file in $files; do # loop over the rest of the arguments and replace content directly in the file
+              sed -Ei "/# x-patch-semver/ {
+                s/[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?/$new_version/
+              }" "$file"
+            done
         - name: Create prerelease PR
           id: pull-request
           uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
