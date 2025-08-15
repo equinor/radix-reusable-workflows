@@ -87,7 +87,7 @@ All inputs, except `branch`, are optional.
 | `version-file-path` | The path to the file where the new version is written to. | `version.txt` |
 | `changelog-path` | The path to the changelog to update for stable release pull requests. | `CHANGELOG.md` |
 | `cliff-config-path` | The path to cliff.toml configuration file, used to configure the layout of the changelog. See https://git-cliff.org/docs/configuration/ for more information. git-cliff will use default configuration if this value is unset. |  |
-| `extra-files` | A space or newline separated list of files to update with new version number. For each file, the workflow will look for lines containing the text '# x-patch-semver', and replace anything that matches a semver version with the new version. |  |
+| `extra-files` | A newline separated list of files to update with new version number. For each file, the workflow will look for lines containing the text '# x-patch-semver', and replace anything that matches a semver version with the new version. |  |
 
 ### Outputs
 
