@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: radix-reusable-workflows
+  annotations:
+    github.com/project-slug: equinor/radix-reusable-workflows
+spec:
+  type: other
+  lifecycle: unknown
+  owner: team-radix
