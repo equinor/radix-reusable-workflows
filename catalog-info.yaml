@@ -2,9 +2,12 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: radix-reusable-workflows
+  title: Radix Re-usable Workflows
+  description: "A collection of reusable GitHub workflows used by the Radix team to handle the release workflow of Radix components."
   annotations:
     github.com/project-slug: equinor/radix-reusable-workflows
 spec:
-  type: other
-  lifecycle: unknown
+  type: service
+  lifecycle: production
   owner: team-radix
+  system: system:default/Radix
