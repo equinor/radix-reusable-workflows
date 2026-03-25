@@ -68,7 +68,7 @@ jobs:
       is_prerelease: ${{ steps.metadata.outputs.is_prerelease }}
       releasable: ${{ steps.metadata.outputs.releasable }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - id: metadata
@@ -119,7 +119,7 @@ jobs:
       - name: Create app token
         id: app-token
         if: inputs.use-github-app-token == true
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ inputs.github-app-id }}
           private-key: ${{ secrets.github-app-private-key }}
@@ -139,7 +139,7 @@ jobs:
           fi
 
           echo "token=$token" >>"$GITHUB_OUTPUT"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false
