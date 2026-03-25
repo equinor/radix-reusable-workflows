@@ -18,7 +18,7 @@ jobs:
       unreleased_pull_requests: ${{ steps.metadata.outputs.unreleased_pull_requests }}
       unreleased_pull_request_count: ${{ steps.metadata.outputs.unreleased_pull_request_count }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Metadata

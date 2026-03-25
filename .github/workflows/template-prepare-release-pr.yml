@@ -76,11 +76,11 @@ jobs:
         latest_version: ${{ steps.ver.outputs.latest_version }}
         commits_since_latest_version: ${{ steps.ver.outputs.commits_since_latest_version }}
       steps:
-        - uses: actions/checkout@v4
+        - uses: actions/checkout@v6
           with:
             fetch-depth: 0
             ref: ${{ inputs.branch }}
-        - uses: actions/setup-go@v5
+        - uses: actions/setup-go@v6
           with:
               go-version: '^1.24'
               cache: false
@@ -146,7 +146,7 @@ jobs:
       env:
         PRERELEASE_REGEX: ^v[0-9]+\.[0-9]+\.[0-9]+-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*
       steps:
-        - uses: actions/checkout@v4
+        - uses: actions/checkout@v6
           with:
             fetch-depth: 0
             ref: ${{ inputs.branch }}
@@ -200,7 +200,7 @@ jobs:
             done
         - name: Create stable release PR
           id: pull-request
-          uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+          uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
           with:
             base: ${{ inputs.branch }}
             delete-branch: true
@@ -227,7 +227,7 @@ jobs:
         contents: write
         issues: write # required to create labels
       steps:
-        - uses: actions/checkout@v4
+        - uses: actions/checkout@v6
           with:
             fetch-depth: 0
             ref: ${{ inputs.branch }}
@@ -269,7 +269,7 @@ jobs:
             done
         - name: Create prerelease PR
           id: pull-request
-          uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+          uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
           with:
             base: ${{ inputs.branch }}
             delete-branch: true
