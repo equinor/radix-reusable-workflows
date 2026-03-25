@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0](https://github.com/equinor/radix-reusable-workflows/compare/v1.0.2..v1.1.0) - 2026-03-25
+
+### 🚀 Features
+
+- Upgrade GitHub Actions to Node.js 24 compatible versions (#12) - ([8dbdb38](https://github.com/equinor/radix-reusable-workflows/commit/8dbdb38d1222700ea916c01b6d8a9b54f59c73f1)) by @sveinpj in [#12](https://github.com/equinor/radix-reusable-workflows/pull/12)
+
+
+### 📚 Documentation
+
+- Add catalog-info.yaml config file (#10) - ([aa2f745](https://github.com/equinor/radix-reusable-workflows/commit/aa2f74518ff749d22f04af3922ea0e3f91a6ec1e)) by @emirgens in [#10](https://github.com/equinor/radix-reusable-workflows/pull/10)
+
+
+## New Contributors ❤️
+
+* @sveinpj made their first contribution in [#12](https://github.com/equinor/radix-reusable-workflows/pull/12)
+* @emirgens made their first contribution in [#10](https://github.com/equinor/radix-reusable-workflows/pull/10)
 ## [1.0.2](https://github.com/equinor/radix-reusable-workflows/compare/v1.0.1..v1.0.2) - 2025-08-15
 
 ### 🐛 Bug Fixes
