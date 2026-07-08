@@ -1,5 +1,5 @@
 on:
-  workflow_call: 
+  workflow_call:
     inputs:
       pull-request-number:
         description: The pull request number to create release and tag from.
@@ -19,7 +19,7 @@ on:
         type: boolean
         default: false
       github-app-id:
-        description: The GitHub App ID to use for authentication when `use-github-app-token` is `true`.
+        description: The GitHub Client ID to use for authentication when `use-github-app-token` is `true`.
         type: string
       github-app-owner:
         description: |
@@ -53,12 +53,12 @@ on:
       release-result:
         description: The result of the release job. Possible values are success, failure, cancelled, or skipped.
         value: ${{ jobs.release.result }}
-        
+
 jobs:
   metadata:
     name: Metadata
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       pull-requests: read
       contents: read
     outputs:
@@ -73,13 +73,13 @@ jobs:
           fetch-depth: 0
       - id: metadata
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -Eeuo pipefail
 
           pr_number=${{ inputs.pull-request-number }}
           pr_info=$(gh pr view $pr_number --json title,labels,mergeCommit,state,number,body | jq 'select(.state=="MERGED" and (.labels[] | .name=="release: pending"))')
-          
+
           if [[ -z "$pr_info" ]]; then
             echo "Pull request $pr_number has invalid release state"
             echo "releasable=false" >>"$GITHUB_OUTPUT"
@@ -100,7 +100,7 @@ jobs:
           if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+- ]]; then
               is_prerelease="true"
           fi
-          
+
           echo "releasable=true" >>"$GITHUB_OUTPUT"
           echo "commit=$commit" >>"$GITHUB_OUTPUT"
           echo "version=$version" >>"$GITHUB_OUTPUT"
@@ -109,7 +109,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       pull-requests: write
       contents: read
       issues: write
@@ -121,7 +121,7 @@ jobs:
         if: inputs.use-github-app-token == true
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ inputs.github-app-id }}
+          client-id: ${{ inputs.github-app-id }}
           private-key: ${{ secrets.github-app-private-key }}
           owner: ${{inputs.github-app-owner }}
           repositories: ${{ inputs.github-app-repositories }}
@@ -153,7 +153,7 @@ jobs:
           file=${{ runner.temp }}/releasenotes
           gh pr view ${{ inputs.pull-request-number }} --json body | jq -r .body > "$file"
 
-          echo "release_notes_file=$file" >>"$GITHUB_OUTPUT"          
+          echo "release_notes_file=$file" >>"$GITHUB_OUTPUT"
       - name: Create tag and release
         env:
           GH_TOKEN: ${{ steps.select-token.outputs.token }} # Cannot use secrets.GITHUB_TOKEN, ref https://github.blog/changelog/2023-11-02-github-actions-enforcing-workflow-scope-when-creating-a-release/ and issue https://github.com/cli/cli/issues/9514
