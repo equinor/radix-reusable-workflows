@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1](https://github.com/equinor/radix-reusable-workflows/compare/v1.1.0..v1.1.1) - 2026-07-09
+
+### 🐛 Bug Fixes
+
+- Use client id instead of app id (#15) - ([a83fb03](https://github.com/equinor/radix-reusable-workflows/commit/a83fb0308897f5260fee90f2800b832857b84859)) by @Richard87 in [#15](https://github.com/equinor/radix-reusable-workflows/pull/15)
+
+
+## New Contributors ❤️
+
+* @Richard87 made their first contribution in [#15](https://github.com/equinor/radix-reusable-workflows/pull/15)
 ## [1.1.0](https://github.com/equinor/radix-reusable-workflows/compare/v1.0.2..v1.1.0) - 2026-03-25
 
 ### 🚀 Features
