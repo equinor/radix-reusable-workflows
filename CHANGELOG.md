@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.1](https://github.com/equinor/radix-reusable-workflows/compare/v1.1.0..v1.1.1) - 2026-07-09
+## [1.1.1](https://github.com/equinor/radix-reusable-workflows/compare/v1.1.0..v1.1.1) - 2026-07-27
 
 ### 🐛 Bug Fixes
 
