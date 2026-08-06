@@ -187,6 +187,7 @@ Input `pull-request-number` is required. If `use-github-app-token` is `false` (d
 | ---- | --- | --- |
 | `pull-request-number` | The pull request number to create release and tag from. |  |
 | `version-file-path` | The path to the file where the new version is read from. | `version.txt` |
+| `set-draft` | Create the release as a draft instead of publishing it. | `false` |
 | `use-github-app-token` | Use GitHub App to make authenticated request for creating release and tag. When true, requires `github-app-id` and `github-app-private-key` to be set. When set to false, requires a token (PAT) to be set in `release-token`. | `false` |
 | `github-app-id` | The GitHub App ID to use for authentication when `use-github-app-token` is `true`. |  |
 | `github-app-owner` | The GitHub App owner to use for authentication when `use-github-app-token` is `true`. Defaults to the owner of the current repo if not set. |  |
