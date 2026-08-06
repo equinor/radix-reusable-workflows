@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.1](https://github.com/equinor/radix-reusable-workflows/compare/v1.1.0..v1.1.1) - 2026-07-09
+## [1.2.0](https://github.com/equinor/radix-reusable-workflows/compare/v1.1.1..v1.2.0) - 2026-08-06
+
+### 🚀 Features
+
+- Create draft releases (#18) - ([dd9bbad](https://github.com/equinor/radix-reusable-workflows/commit/dd9bbadb371d2f73b52f43205a7f7df9d889fc0e)) by @Richard87 in [#18](https://github.com/equinor/radix-reusable-workflows/pull/18)
+
+
+## [1.1.1](https://github.com/equinor/radix-reusable-workflows/compare/v1.1.0..v1.1.1) - 2026-07-27
 
 ### 🐛 Bug Fixes
 
