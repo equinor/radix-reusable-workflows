@@ -77,26 +77,26 @@ jobs:
 
 All inputs, except `branch`, are optional.
 
-| Name | Description | Default |
-| ---- | --- | --- |
-| `branch` | The name of the branch to analyze commits for calculating next version. This is also used as the base branch when creating release pull requests. | |
-| `stable-release-pr-branch` | The pull request branch name for stable releases. | `release-pull-request/stable-release` |
-| `generate-pre-release-pr` | Generate pre-release pull requests. | `false` |
-| `pre-release-version-prefix` | The prefix to use in identifier for calculating pre-release versions. For example, if this value is set to "rc" (default), the first pre-release version for version "1.5.0" will be "1.5.0-rc.1", then "1.5.0-rc.2", and so on. | `rc` |
-| `pre-release-pr-branch` | The pull request branch name for pre-releases. | `release-pull-request/pre-release` |
-| `version-file-path` | The path to the file where the new version is written to. | `version.txt` |
-| `changelog-path` | The path to the changelog to update for stable release pull requests. | `CHANGELOG.md` |
-| `cliff-config-path` | The path to cliff.toml configuration file, used to configure the layout of the changelog. See https://git-cliff.org/docs/configuration/ for more information. git-cliff will use default configuration if this value is unset. |  |
-| `extra-files` | A newline separated list of files to update with new version number. For each file, the workflow will look for lines containing the text '# x-patch-semver', and replace anything that matches a semver version with the new version. |  |
+| Name                         | Description                                                                                                                                                                                                                           | Default                               |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `branch`                     | The name of the branch to analyze commits for calculating next version. This is also used as the base branch when creating release pull requests.                                                                                     |                                       |
+| `stable-release-pr-branch`   | The pull request branch name for stable releases.                                                                                                                                                                                     | `release-pull-request/stable-release` |
+| `generate-pre-release-pr`    | Generate pre-release pull requests.                                                                                                                                                                                                   | `false`                               |
+| `pre-release-version-prefix` | The prefix to use in identifier for calculating pre-release versions. For example, if this value is set to "rc" (default), the first pre-release version for version "1.5.0" will be "1.5.0-rc.1", then "1.5.0-rc.2", and so on.      | `rc`                                  |
+| `pre-release-pr-branch`      | The pull request branch name for pre-releases.                                                                                                                                                                                        | `release-pull-request/pre-release`    |
+| `version-file-path`          | The path to the file where the new version is written to.                                                                                                                                                                             | `version.txt`                         |
+| `changelog-path`             | The path to the changelog to update for stable release pull requests.                                                                                                                                                                 | `CHANGELOG.md`                        |
+| `cliff-config-path`          | The path to cliff.toml configuration file, used to configure the layout of the changelog. See https://git-cliff.org/docs/configuration/ for more information. git-cliff will use default configuration if this value is unset.        |                                       |
+| `extra-files`                | A newline separated list of files to update with new version number. For each file, the workflow will look for lines containing the text '# x-patch-semver', and replace anything that matches a semver version with the new version. |                                       |
 
 ### Outputs
 
-| Name | Description |
-| ---- | --- |
-| `stable-release-pull-request-number` | The stable release pull request number. |
+| Name                                    | Description                                                          |
+| --------------------------------------- | -------------------------------------------------------------------- |
+| `stable-release-pull-request-number`    | The stable release pull request number.                              |
 | `stable-release-pull-request-operation` | The stable release pull request operation performed by the workflow. |
-| `pre-release-pull-request-number` | The pre-release pull request number. |
-| `pre-release-pull-request-operation` | The pre-release pull request operation performed by the workflow. |
+| `pre-release-pull-request-number`       | The pre-release pull request number.                                 |
+| `pre-release-pull-request-operation`    | The pre-release pull request operation performed by the workflow.    |
 
 
 ## template-create-release-from-pr
@@ -183,26 +183,27 @@ jobs:
 
 Input `pull-request-number` is required. If `use-github-app-token` is `false` (default) then `release-token` must be provided, and if `use-github-app-token` is `true` then `github-app-id` and `github-app-private-key` must be provided.
 
-| Name | Description | Default |
-| ---- | --- | --- |
-| `pull-request-number` | The pull request number to create release and tag from. |  |
-| `version-file-path` | The path to the file where the new version is read from. | `version.txt` |
-| `use-github-app-token` | Use GitHub App to make authenticated request for creating release and tag. When true, requires `github-app-id` and `github-app-private-key` to be set. When set to false, requires a token (PAT) to be set in `release-token`. | `false` |
-| `github-app-id` | The GitHub App ID to use for authentication when `use-github-app-token` is `true`. |  |
-| `github-app-owner` | The GitHub App owner to use for authentication when `use-github-app-token` is `true`. Defaults to the owner of the current repo if not set. |  |
-| `github-app-repositories` | Comma or newline-separated list of repositories to grant access to for GitHub App when `use-github-app-token` is `true`. If `github-app-owner` is set and `github-app-repositories` is empty, access will be scoped to all repositories the GitHub App is installed in. If `github-app-owner` and `github-app-repositories` are empty, access will be scoped to only the current repository. |  |
-| `release-token` | A Github token with permission to create GitHub release for a specific target commit. Required when `use-github-app-token` is `false`. |  |
-| `github-app-private-key` | The private key for the GitHub App defined by `github-app-id`. Required when `use-github-app-token` is `true`. |  |
+| Name                      | Description                                                                                                                                                                                                                                                                                                                                                                                  | Default       |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| `pull-request-number`     | The pull request number to create release and tag from.                                                                                                                                                                                                                                                                                                                                      |               |
+| `version-file-path`       | The path to the file where the new version is read from.                                                                                                                                                                                                                                                                                                                                     | `version.txt` |
+| `set-draft`               | Create the release as a draft instead of publishing it.                                                                                                                                                                                                                                                                                                                                      | `false`       |
+| `use-github-app-token`    | Use GitHub App to make authenticated request for creating release and tag. When true, requires `github-app-id` and `github-app-private-key` to be set. When set to false, requires a token (PAT) to be set in `release-token`.                                                                                                                                                               | `false`       |
+| `github-app-id`           | The GitHub App ID to use for authentication when `use-github-app-token` is `true`.                                                                                                                                                                                                                                                                                                           |               |
+| `github-app-owner`        | The GitHub App owner to use for authentication when `use-github-app-token` is `true`. Defaults to the owner of the current repo if not set.                                                                                                                                                                                                                                                  |               |
+| `github-app-repositories` | Comma or newline-separated list of repositories to grant access to for GitHub App when `use-github-app-token` is `true`. If `github-app-owner` is set and `github-app-repositories` is empty, access will be scoped to all repositories the GitHub App is installed in. If `github-app-owner` and `github-app-repositories` are empty, access will be scoped to only the current repository. |               |
+| `release-token`           | A Github token with permission to create GitHub release for a specific target commit. Required when `use-github-app-token` is `false`.                                                                                                                                                                                                                                                       |               |
+| `github-app-private-key`  | The private key for the GitHub App defined by `github-app-id`. Required when `use-github-app-token` is `true`.                                                                                                                                                                                                                                                                               |               |
 
 ### Outputs
 
-| Name | Description |
-| ---- | --- |
+| Name             | Description                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------- |
 | `release-result` | The result of the release job. Possible values are success, failure, cancelled, or skipped. |
-| `version` | The version that was released. |
-| `tag` | The tag that was released. |
-| `commit` | The commit that was released. |
-| `is-prerelease` | Release is marked as pre-release. |
+| `version`        | The version that was released.                                                              |
+| `tag`            | The tag that was released.                                                                  |
+| `commit`         | The commit that was released.                                                               |
+| `is-prerelease`  | Release is marked as pre-release.                                                           |
 
 ## template-unreleased-pr-metadata
 
@@ -264,7 +265,7 @@ This workflow has no inputs.
 
 ### Outputs
 
-| Name | Description |
-| ---- | --- |
-| `unreleased-pull-requests` | A JSON array containing numbers (ID) of pull requests that are merged and labelled with "release: pending", e.g. [55, 57] |
-| `unreleased-pull-request-count` | Number of items in unreleased-pull-requests JSON array |
+| Name                            | Description                                                                                                               |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `unreleased-pull-requests`      | A JSON array containing numbers (ID) of pull requests that are merged and labelled with "release: pending", e.g. [55, 57] |
+| `unreleased-pull-request-count` | Number of items in unreleased-pull-requests JSON array                                                                    |

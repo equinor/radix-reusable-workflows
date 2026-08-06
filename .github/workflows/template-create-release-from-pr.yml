@@ -10,6 +10,11 @@ on:
         required: false
         type: string
         default: version.txt
+      set-draft:
+        description: Create the release as a draft instead of publishing it. Defaults to false.
+        required: false
+        type: boolean
+        default: false
       use-github-app-token:
         description: |
           Use GitHub App to make authenticated request for creating release and tag.
@@ -164,7 +169,8 @@ jobs:
             --notes-file ${{ steps.release-notes.outputs.release_notes_file }} \
             --target ${{ needs.metadata.outputs.commit }} \
             --title ${{ needs.metadata.outputs.tag }} \
-            --prerelease=${{ needs.metadata.outputs.is_prerelease }}
+            --prerelease=${{ needs.metadata.outputs.is_prerelease }} \
+            --draft=${{ inputs.set-draft }}
       - name: Mark pull request as tagged
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
