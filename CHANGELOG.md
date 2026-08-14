@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.1](https://github.com/equinor/radix-reusable-workflows/compare/v1.2.0..v1.2.1) - 2026-08-14
+
+### 🐛 Bug Fixes
+
+- Create tag even if set_draft is true (#20) - ([9517ab9](https://github.com/equinor/radix-reusable-workflows/commit/9517ab96d167c2a208ce9234aaf2fbb955c3bed1)) by @Richard87 in [#20](https://github.com/equinor/radix-reusable-workflows/pull/20)
+
+
 ## [1.2.0](https://github.com/equinor/radix-reusable-workflows/compare/v1.1.1..v1.2.0) - 2026-08-06
 
 ### 🚀 Features
