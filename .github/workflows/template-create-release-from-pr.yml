@@ -132,6 +132,7 @@ jobs:
           repositories: ${{ inputs.github-app-repositories }}
           permission-workflows: write
           permission-contents: write
+
       - name: Select token
         id: select-token
         run: |
@@ -144,10 +145,12 @@ jobs:
           fi
 
           echo "token=$token" >>"$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          persist-credentials: false
+          token: ${{ steps.app-token.outputs.token }}
+
       - name: Create release notes file
         id: release-notes
         env:
@@ -159,6 +162,7 @@ jobs:
           gh pr view ${{ inputs.pull-request-number }} --json body | jq -r .body > "$file"
 
           echo "release_notes_file=$file" >>"$GITHUB_OUTPUT"
+
       - name: Create tag and release
         env:
           GH_TOKEN: ${{ steps.select-token.outputs.token }} # Cannot use secrets.GITHUB_TOKEN, ref https://github.blog/changelog/2023-11-02-github-actions-enforcing-workflow-scope-when-creating-a-release/ and issue https://github.com/cli/cli/issues/9514
@@ -171,6 +175,16 @@ jobs:
             --title ${{ needs.metadata.outputs.tag }} \
             --prerelease=${{ needs.metadata.outputs.is_prerelease }} \
             --draft=${{ inputs.set-draft }}
+
+      - name: Create if set_draft is true
+        if: ${{ inputs.set-draft == true }}
+        run: |
+          git config user.name "${{ steps.app-token.outputs.app-slug}}[bot]"
+          git config user.email "${{ steps.app-token.outputs.installation-id}}+${{ steps.app-token.outputs.app-slug}}[bot]@users.noreply.github.com"
+
+          git tag -a "${{ needs.metadata.outputs.tag }}" -m "Tag created by ${{ github.actor }}"
+          git push origin "${{ needs.metadata.outputs.tag }}"
+
       - name: Mark pull request as tagged
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
